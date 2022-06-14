@@ -1,25 +1,32 @@
 const Product=require('../models/productModel')
+const ErrorHandleing = require('../utils/errorHandle')
+const CatchAsyncError = require('../middleware/CatchAsyncErrors')
+const ApiFeatures = require('../utils/apiFeatures')
+
 
 //create product
 
-exports.createProduct=async(req,res,next)=>{
-console.log(req.body)
+exports.createProduct=CatchAsyncError(async(req,res,next)=>{
+
     const product=await Product.create(req.body)
     res.status(201).json({
         success:true,
         product
     })
-}
+})
 //Fetch All product
-exports.getAllProducts=async (req,res)=>{
-       const product=await Product.find()
+exports.getAllProducts=CatchAsyncError(async (req,res)=>{
+    
+   const apiFeatures = new ApiFeatures(Product.find(),req.query).search()
+   console.log( apiFeatures.query);
+       const product=await apiFeatures.query
     res.status(200).json({
         success:true,
         product
     })
-}
+});
 //Update Product   
-    exports.ProductsUpdate = async (req,res,next)=>{
+    exports.ProductsUpdate =CatchAsyncError( async (req,res,next)=>{
         let prodId=req.params.id
         let product=await Product.findById(prodId)
         if(!product){
@@ -38,27 +45,24 @@ exports.getAllProducts=async (req,res)=>{
             success:true,
             product
         })
-    }
+    });
 
 //Fetch Products
-    exports.ProductDetails = async (req,res,next)=>{
+    exports.ProductDetails = CatchAsyncError(async (req,res,next)=>{
         let prodId=req.params.id
         let product=await Product.findById(prodId)
         if(!product){
-            return res.status(500).json({
-                success:false,
-                message:"Product Not Found"
-            })
+            return next(new ErrorHandleing("Product Not Found",404))
         }
 
          res.status(200).json({
             success:true,
             product
         })
-    }
+    })
 
 //Delete Product
-    exports.DeleteProduct = async (req,res,next)=>{
+    exports.DeleteProduct =CatchAsyncError( async (req,res,next)=>{
         let prodId=req.params.id
         let product=await Product.findById(prodId)
         if(!product){
@@ -73,5 +77,4 @@ exports.getAllProducts=async (req,res)=>{
             success:true,
             product
         })
-    }
-
+    });
