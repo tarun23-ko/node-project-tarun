@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require("validator")
 const bcryptjs = require('bcrypt')
 const jwt = require("jsonwebtoken")
+const CatchAsyncErrors = require('../middleware/CatchAsyncErrors')
 const userScehema = new mongoose.Schema({
 
     name:{
@@ -61,5 +62,7 @@ userScehema.methods.comparePassword = async function(enteredPassword){
     return bcryptjs.compare(enteredPassword,this.password)
 
 }
+
+
 
 module.exports = mongoose.model("User",userScehema)

@@ -40,3 +40,16 @@ exports.loginUSer=CatchAsyncError(async(req,res,next)=>{
 
     sendTokens(user,200,res)
 })
+
+//Logged out User
+exports.logout = CatchAsyncError(async(req,res,next)=>{
+    res.cookie("token",null,{
+        expires:new Date(Date.now()),
+        httpOnly:true
+
+    })
+    res.status(201).json({
+        success:true,
+        message:"Logged out"
+    })
+})
