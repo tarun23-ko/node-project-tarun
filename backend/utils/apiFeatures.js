@@ -31,8 +31,8 @@ class ApiFeatures{
     }
 
     pagination(Items_no_per_page){
-        console.log(this.queryStr)
-        const currentPage = Number(this.queryStr.page) || 1;
+        console.log(this.queryString)
+        const currentPage = Number(this.queryString.page) || 1;
         const skipItem = Items_no_per_page * (currentPage-1)
          this.query = this.query.limit(Items_no_per_page).skip(skipItem)
          return this;

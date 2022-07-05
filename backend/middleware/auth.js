@@ -13,13 +13,14 @@ exports.isAuthenticated = CatchAsyncErrors(async(req,res,next)=>{
  req.user = await UserModels.findById(decodeData.id)
  next()
 })
-exports.authorizedRoles = (...roles)=>{
+exports.authorizedRoles = (role)=>{
     return (req,res,next)=>{
-        if (!roles.includes(req.user.roles === "admin")) {
-
-            return ErrorHandleing ("You have no permission to Access this feature",403)
+         console.log(req.user.role );
+        if (!(req.user.role === "admin")) {
+             console.log("HEY")
+            return new ErrorHandleing ("You have no permission to Access this feature",403)
         }
         next()
-    }
+    } 
 
 }
