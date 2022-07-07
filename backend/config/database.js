@@ -9,10 +9,9 @@ mongoose.connect("mongodb://127.0.0.1:27017/Ecommerce",
     
 }).then((data) => {
 
-    console.log(data) 
     console.log("Database Conneted")
 }).catch((err) => {
     console.log(err)
 });
-}
-module.exports=ConnectDatabse;
+} 
+module.exports=ConnectDatabse;  

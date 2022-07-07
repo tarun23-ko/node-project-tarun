@@ -57,21 +57,22 @@ exports.logout = CatchAsyncError(async(req,res,next)=>{
 
 exports.forgetpassword = CatchAsyncError(async (req,res,next)=>{
 
-    const userFetch= User.findOne({email:req.user.email})
+    const userFetch= User.findOne({email:req.body.email})
     if (!userFetch) {
         
         return next(new ErrorHandleing("User Not found",404))
     }
-
-    const resetToke= userFetch.getResetToken()
-    await userFetch.save({validateBeforeSave:false})
+    //console.log(userFetch)  
+    const resetToke= userFetch.schema.methods.getResetToken()
+    console.log(resetToke);
+    await userFetch.option.save({validateBeforeSave:false})
 
     const resetpasswordUrl= `http://127.0.0.1:3000/api/v1/password/reset/${resetToke}`
     const message = `Your password Reset token : is :- ${resetpasswordUrl}` 
 
     try {
         await sendmail({
-            email:user.email,
+            email:userFetch.email,
             subject :"Ecommerce Reset Password",
             message:message
         })
