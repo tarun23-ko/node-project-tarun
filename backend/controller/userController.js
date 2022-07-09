@@ -5,6 +5,7 @@ const { TokenExpiredError } = require('jsonwebtoken')
 const sendTokens = require('../utils/JwtToken')
 const sendmail = require('../utils/SendEmail.js')
 const crypto = require("crypto")
+const { findById } = require('../models/UserModels')
 
 
 //Register User FUnction
@@ -114,3 +115,45 @@ exports.resetpassword = CatchAsyncError(async (req,res,next)=>{
     sendTokens(user,200,res)
 
 })
+
+
+//Get user Details
+
+exports.getUserDetails=CatchAsyncError(async(req,res,next)=>{
+
+    const user = await User.findById(req.user.id)
+    res.status(200).json({
+        success:true,user
+    })
+})
+
+//Update user Profile
+
+exports.UpdateUserProfile=CatchAsyncError(async(req,res,next)=>{
+    const UpdatedData={
+        email:req.body.email,
+        name:req.body.name
+    }
+    //We will Add cloudnary Later
+    const user = await User.findByIdAndUpdate(req.user.id,UpdatedData,{
+        new:true,
+        runValidators:true,
+        useFindAndModify:true
+    })
+    res.status(200).json({
+        success:true
+    })
+})
+
+//get All User Admin
+exports.getAlluser=CatchAsyncError(async(req,res,next)=>{
+
+    const user =await User.find()
+
+    res.status(200).json({
+        user
+    })
+})
+
+//Role Update User ->BAKI Ache only for admin
+//User Delete->Baki ache only for Admin

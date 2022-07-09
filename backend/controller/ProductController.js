@@ -2,6 +2,7 @@ const Product=require('../models/productModel')
 const ErrorHandleing = require('../utils/errorHandle')
 const CatchAsyncError = require('../middleware/CatchAsyncErrors')
 const ApiFeatures = require('../utils/apiFeatures')
+const CatchAsyncErrors = require('../middleware/CatchAsyncErrors')
 
 
 //create product
@@ -82,3 +83,46 @@ exports.getAllProducts=CatchAsyncError(async (req,res)=>{
             product
         })
     });
+
+
+    //User create and Update Review
+    exports.CreateUpdateProductReview = CatchAsyncErrors(async(req,res,next)=>{
+        const {rating,comment,productid}=req.body
+        const Review={
+            user:req.user.id,
+            name:req.user.name,
+            rating:Number(rating),
+            comment
+
+        }
+
+        const product = await Product.findById(productid)
+        const isReviewd = await product.reviews.find((rev)=>rev.user.id.toString() === req.user._id.toString())
+        if (isReviewd) {
+        product.reviews.forEach(element => {
+            if (element.user.toString() === req.user._id.toString()) {
+                element.rating = rating
+                element.comment = comment
+            }
+            
+        });
+            
+        }else{
+            product.reviews.push(Review)
+            product.numofReviews = product.reviews.length
+        }
+
+        let avg = 0 ;
+      product.reviews.forEach(rev => {
+            avg+=rev.ratings
+        })
+        
+        product.ratings = avg/product.reviews.length
+
+        await product.save({validateBeforeSave:false})
+        res.status(200).json({
+            success:true
+        })
+    })
+
+    //Get product reviews
